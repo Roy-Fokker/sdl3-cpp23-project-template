@@ -1,0 +1,40 @@
+---
+BasedOnStyle: Microsoft
+IndentWidth: 4
+UseTab: AlignWithSpaces
+ColumnLimit: 0
+---
+Language: Cpp
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel:        true
+  AfterClass:            true
+  AfterControlStatement: Always
+  AfterEnum:             true
+  AfterFunction:         true
+  AfterNamespace:        true
+  AfterObjCDeclaration:  true
+  AfterStruct:           true
+  AfterUnion:            true
+  AfterExternBlock:      true
+  BeforeCatch:           true
+  BeforeElse:            true
+  BeforeLambdaBody:      false
+  BeforeWhile:           true
+  IndentBraces:          false
+  SplitEmptyFunction:    true
+  SplitEmptyRecord:      true
+  SplitEmptyNamespace:   true
+PointerAlignment: Right
+AlignConsecutiveAssignments: true
+AlignTrailingComments: true
+AccessModifierOffset: -4
+FixNamespaceComments: false
+NamespaceIndentation: All
+Cpp11BracedListStyle: false
+AllowShortLambdasOnASingleLine: Empty
+LambdaBodyIndentation: OuterScope
+BreakBeforeTernaryOperators: true
+AlignOperands: AlignAfterOperator
+SortIncludes: false
+BracedInitializerIndentWidth: 2

@@ -1,0 +1,65 @@
+# ignore CMake Build directory
+/builds
+/install
+/out
+/bin
+
+# ignore vcpkg folder
+/vcpkg
+
+# Ignore cpm.cmake cached files
+/.cache/CPM/*
+
+# ignore vscode specific directory
+.vscode/*
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/c_cpp_properties.json
+!.vscode/settings.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+*.pdb
+*.ilk
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Visual Studio folders
+.vs/*
+!.vs/launch.vs.json
+
+# other files/folders
+.DS_Store

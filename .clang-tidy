@@ -1,0 +1,19 @@
+---
+Checks: >
+    clang-diagnostic-*,
+      -clang-diagnostic-c99-designator,
+    clang-analyzer-*,
+      -clang-analyzer-deadcode.DeadStores,
+    cppcoreguidelines-*,
+    modernize-*,
+    performance-*,
+    readability-*,
+      -readability-uppercase-literal-suffix,
+      -readability-qualified-auto,
+      -readability-convert-member-functions-to-static
+WarningsAsErrors: true
+HeaderFilterRegex: ".*"
+FormatStyle: file
+CheckOptions:
+    - key: modernize-use-default-member-init.UseAssignment
+      value: 1

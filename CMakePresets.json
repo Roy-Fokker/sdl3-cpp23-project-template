@@ -1,0 +1,132 @@
+{
+	"version": 9,
+	"$schema": "https://cmake.org/cmake/help/latest/_downloads/3e2d73bff478d88a7de0de736ba5e361/schema.json",
+	"cmakeMinimumRequired": {
+		"major": 3,
+		"minor": 31
+	},
+	"configurePresets": [
+		{
+			"name": "base",
+			"description": "Set some basic directories",
+			"hidden": true,
+			"binaryDir": "${sourceDir}/builds/${presetName}",
+			"installDir": "${sourceDir}/install/${presetName}",
+			"cacheVariables": {
+				"CMAKE_EXPORT_COMPILE_COMMANDS": true,
+				"CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/bin",
+				"CMAKE_MODULE_PATH": "${sourceDir}/cmake"
+			}
+		},
+		{
+			"name": "cpm",
+			"hidden": true,
+			"description": "CPM.Cmake Configuration",
+			"cacheVariables": {
+				"CPM_SOURCE_CACHE": "${sourceDir}/.cache/CPM"
+			}
+		},
+		{
+			"name": "vcpkg",
+			"hidden": true,
+			"description": "Configure VCPkg toolchain",
+			"toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+			"environment": {
+				"VCPKG_FEATURE_FLAGS": "manifests,versions,binarycaching,registries"
+			}
+		},
+		{
+			"name": "ninja",
+			"displayName": "Ninja build",
+			"description": "Generate Ninja project files for current configuration",
+			"hidden": true,
+			"generator": "Ninja"
+		},
+		{
+			"name": "ninja-multi-config",
+			"displayName": "Ninja Build Multi-Config",
+			"description": "Generate Ninja project files for all configurations",
+			"hidden": true,
+			"generator": "Ninja Multi-Config"
+		},
+		{
+			"name": "msvc",
+			"displayName": "MS Visual C++ x64 toolchain",
+			"hidden": true,
+			"architecture": {
+				"value": "x64",
+				"strategy": "external"
+			},
+			"cacheVariables": {
+				"CMAKE_C_COMPILER": "cl",
+				"CMAKE_CXX_COMPILER": "cl",
+				"CMAKE_CXX_FLAGS": "/utf-8 /EHsc /W4 /permissive- /Zc:__cplusplus /Zc:preprocessor /Zc:throwingNew /Zc:inline /Zc:externConstexpr /Zc:templateScope /Zc:checkGwOdr /Zc:enumTypes",
+				"CMAKE_PDB_OUTPUT_DIRECTORY": "${sourceDir}/builds/${presetName}/pdb"
+			}
+		},
+		{
+			"name": "windows-default",
+			"displayName": "Windows x64 Build",
+			"inherits": [
+				"base",
+				"cpm",
+				"ninja",
+				"msvc"
+			],
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Windows"
+			}
+		},
+		{
+			"name": "clang",
+			"displayName": "LLVM Clang++ configuration",
+			"hidden": true,
+			"cacheVariables": {
+				"CMAKE_CXX_COMPILER": "clang++",
+				"CMAKE_CXX_FLAGS": "-stdlib=libc++ -std=c++23 -Wall -Wextra",
+				"VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake",
+				"VCPKG_TARGET_TRIPLET": "x64-linux-libcxx"
+			},
+			"environment": {
+				"CC": "clang",
+				"CXX": "clang++"
+			}
+		},
+		{
+			"name": "linux-default",
+			"displayName": "Linux x64 Build",
+			"inherits": [
+				"base",
+				"cpm",
+				"ninja",
+				"clang"
+			],
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug"
+			},
+			"condition": {
+				"type": "equals",
+				"lhs": "${hostSystemName}",
+				"rhs": "Linux"
+			}
+		}
+	],
+	"buildPresets": [
+		{
+			"name": "windows-debug",
+			"configurePreset": "windows-default",
+			"displayName": "Windows Debug",
+			"description": "Build using ninja cpm debug configuration for windows",
+			"configuration": "Debug"
+		},
+		{
+			"name": "linux-debug",
+			"configurePreset": "linux-default",
+			"displayName": "Linux Debug",
+			"description": "Build using ninja, debug configuration for Linux",
+			"configuration": "Debug"
+		}
+	]
+}

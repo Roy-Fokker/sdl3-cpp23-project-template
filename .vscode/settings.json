@@ -1,0 +1,11 @@
+{
+	"files.associations": {
+		"*.ixx": "cpp",
+		"*.cppm": "cpp",
+	},
+	"C_Cpp.enhancedColorization": "enabled",
+	"C_Cpp.errorSquiggles": "enabled",
+	"C_Cpp.codeAnalysis.exclude": {
+		".cache/**": true
+	},
+}
