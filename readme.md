@@ -35,7 +35,7 @@ VSCode will run these automatically.
 Uses following libraries retrieved from their project repos by CPM.CMake
 - SDL3, obviously
 - GLM, for math
-- DXC, either from Windows SDK or Vulkan SDK
+- DXC, either from Windows SDK (for D3D12 backend) or Vulkan SDK (for Vulkan backend)
 
 ## references
 - Building on linux with Clang and libc++ for module support, https://mattbolitho.github.io/posts/vcpkg-with-libcxx/

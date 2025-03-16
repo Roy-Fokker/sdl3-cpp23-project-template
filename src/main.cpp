@@ -11,6 +11,8 @@ auto main() -> int
 	auto wnd = SDL::make_window(800, 600, "SDL C++ Project Template.");
 	auto gpu = SDL::make_gpu(SDL_GPU_SHADERFORMAT_SPIRV);
 
+	std::println("GPU Driver API: {}", SDL_GetGPUDeviceDriver(gpu.get()));
+
 	result = SDL_ClaimWindowForGPUDevice(gpu.get(), wnd.get());
 	assert(result and "Could not claim windows for gpu.");
 
