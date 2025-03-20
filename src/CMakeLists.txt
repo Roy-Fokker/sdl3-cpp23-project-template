@@ -23,7 +23,8 @@ LIST(APPEND glm_definitions
 
 # set preprocessor defines
 target_compile_definitions(${PRJ_APP_NAME}
-	PRIVATE 
+	PRIVATE
+		$<$<CONFIG:Debug>:DEBUG>    # Ensure DEBUG macro is defined in debug build
 		${platform_definitions}     # Get platform specific definitions
 		${glm_definitions}          # Definitions to configure GLM
 )

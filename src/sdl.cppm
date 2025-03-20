@@ -10,7 +10,7 @@ export namespace SDL
 	{
 		// If we are building in DEBUG mode, use this variable to enable extra messages from SDL
 		constexpr auto IS_DEBUG = bool{
-#ifdef _DEBUG
+#ifdef DEBUG
 			true
 #endif
 		};
