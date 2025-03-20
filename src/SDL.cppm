@@ -9,7 +9,11 @@ export namespace SDL
 	namespace type
 	{
 		// If we are building in DEBUG mode, use this variable to enable extra messages from SDL
-		constexpr auto IS_DEBUG = bool{ _DEBUG };
+		constexpr auto IS_DEBUG = bool{
+#ifdef _DEBUG
+			true
+#endif
+		};
 
 		// Deleter template, for use with SDL objects.
 		// Allows use of SDL Objects with C++'s smart pointers, using SDL's destroy function

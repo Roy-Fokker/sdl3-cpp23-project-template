@@ -15,8 +15,7 @@
 			"cacheVariables": {
 				"CMAKE_EXPORT_COMPILE_COMMANDS": true,
 				"CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/bin",
-				"CMAKE_MODULE_PATH": "${sourceDir}/cmake",
-				"CMAKE_CXX_FLAGS_DEBUG": "_DEBUG"
+				"CMAKE_MODULE_PATH": "${sourceDir}/cmake"
 			}
 		},
 		{
