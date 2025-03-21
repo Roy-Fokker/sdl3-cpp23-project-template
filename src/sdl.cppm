@@ -3,6 +3,7 @@ module;
 export module sdl;
 
 import std;
+import io;
 
 export namespace sdl
 {

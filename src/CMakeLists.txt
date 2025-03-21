@@ -46,6 +46,7 @@ target_sources(${PRJ_APP_NAME}
 		sdl.cppm
 		application.cppm
 		clock.cppm
+		io.cppm
 )
 
 # libraries used by this application

@@ -5,6 +5,7 @@ export module application;
 import std;
 import sdl;
 import clock;
+import io;
 
 namespace st = sdl::type;
 
