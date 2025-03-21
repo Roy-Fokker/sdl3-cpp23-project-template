@@ -2,9 +2,11 @@
 # Find DXC from Windows SDK and Vulkan SDK.
 
 find_program(DXC 
-	dxc
-	PATHS $ENV{VULKAN_SDK}
+	NAMES dxc dxc.exe
+	HINTS $ENV{VULKAN_SDK}/bin /usr/bin
+	PATHS $ENV{VULKAN_SDK}/bin /usr/bin
 	DOC "DirectX 12 shader compiler"
+	NO_DEFAULT_PATH
 )
 if ("${DXC}" STREQUAL "DXC-NOTFOUND")
 	message(FATAL_ERROR "[Error]: DirectX Shader Compiler not found")
