@@ -6,15 +6,15 @@ import std;
 
 export namespace sdl
 {
+	// If we are building in DEBUG mode, use this variable to enable extra messages from SDL
+	constexpr auto IS_DEBUG = bool{
+#ifdef DEBUG
+		true
+#endif
+	};
+
 	namespace type
 	{
-		// If we are building in DEBUG mode, use this variable to enable extra messages from SDL
-		constexpr auto IS_DEBUG = bool{
-#ifdef DEBUG
-			true
-#endif
-		};
-
 		// Deleter template, for use with SDL objects.
 		// Allows use of SDL Objects with C++'s smart pointers, using SDL's destroy function
 		template <auto fn>
@@ -66,7 +66,7 @@ export namespace sdl
 
 	auto make_gpu(SDL_GPUShaderFormat preferred_shader_format) -> type::gpu_ptr
 	{
-		auto gpu = SDL_CreateGPUDevice(preferred_shader_format, type::IS_DEBUG, NULL);
+		auto gpu = SDL_CreateGPUDevice(preferred_shader_format, IS_DEBUG, NULL);
 		assert(gpu != nullptr and "GPU device could not be created.");
 
 		return type::gpu_ptr{ gpu };
