@@ -13,12 +13,13 @@ export namespace project
 	class application
 	{
 	public:
+		// Rule of 5
 		application(const application &)                     = default; // defaulted copy c'tor
 		auto operator=(const application &) -> application & = default; // defaulted copy c'tor
 		application(application &&)                          = default; // defaulted move c'tor
 		auto operator=(application &&) -> application &      = default; // defaulted move c'tor
 
-	public:
+		// Public structures to start the application
 		struct window_info
 		{
 			uint32_t width;
@@ -32,7 +33,7 @@ export namespace project
 			SDL_GPUShaderFormat shader_format;
 		};
 
-	public:
+		// Public API
 		application(const window_info &wnd_info, const gpu_info &gpu_info)
 		{
 			auto result = SDL_Init(SDL_INIT_VIDEO);
@@ -77,21 +78,33 @@ export namespace project
 		}
 
 	private:
+		// functions to handle SDL Events and Inputs
 		void handle_sdl_events();
 		void handle_sdl_input();
 
+		// Scene and Application State
 		void prepare_scene();
 		void update_state();
+
+		// Show on screen
 		void draw();
 
-	private:
+		// Structure to hold scene objects
+		struct scene
+		{
+			SDL_FColor clear_color;
+		};
+
+		// Private members
 		st::gpu_ptr gpu    = nullptr;
 		st::window_ptr wnd = nullptr;
 
-		clock clk;
+		clock clk = {};
 
 		bool quit     = false;
 		SDL_Event evt = {};
+
+		scene scn = {};
 	};
 }
 
@@ -146,6 +159,7 @@ void application::handle_sdl_input()
 
 void application::prepare_scene()
 {
+	scn.clear_color = { 0.2f, 0.2f, 0.4f, 1.0f };
 }
 
 void application::update_state()
@@ -154,4 +168,21 @@ void application::update_state()
 
 void application::draw()
 {
+	auto cmd_buf = SDL_AcquireGPUCommandBuffer(gpu.get());
+	assert(cmd_buf != nullptr and "Failed to acquire command buffer.");
+
+	auto sc_img = sdl::next_swapchain_image(wnd.get(), cmd_buf);
+
+	auto color_target = SDL_GPUColorTargetInfo{
+		.texture     = sc_img,
+		.clear_color = scn.clear_color,
+		.load_op     = SDL_GPU_LOADOP_CLEAR,
+		.store_op    = SDL_GPU_STOREOP_STORE,
+	};
+
+	auto render_pass = SDL_BeginGPURenderPass(cmd_buf, &color_target, 1, nullptr);
+	{
+	}
+	SDL_EndGPURenderPass(render_pass);
+	SDL_SubmitGPUCommandBuffer(cmd_buf);
 }

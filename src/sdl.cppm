@@ -71,4 +71,15 @@ export namespace sdl
 
 		return type::gpu_ptr{ gpu };
 	}
+
+	auto next_swapchain_image(SDL_Window *wnd, SDL_GPUCommandBuffer *cmd_buf) -> SDL_GPUTexture *
+	{
+		auto sc_tex = (SDL_GPUTexture *)nullptr;
+
+		auto res = SDL_WaitAndAcquireGPUSwapchainTexture(cmd_buf, wnd, &sc_tex, NULL, NULL);
+		assert(res == true and "Wait and acquire GPU swapchain texture failed.");
+		assert(sc_tex != nullptr and "Swapchain texture is null. Is window minimized?");
+
+		return sc_tex;
+	}
 }
