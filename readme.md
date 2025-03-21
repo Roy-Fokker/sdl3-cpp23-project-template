@@ -9,6 +9,7 @@
   - MSVC (Windows only)
   - Clang (Linux with libc++ only)
 - Focuses on SDL3 GPU
+- HLSL for all shaders
 
 ## to be figured out
 - Intellisense and clangd both cannot handle modules so don't work correctly

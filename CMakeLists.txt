@@ -16,6 +16,9 @@ include(${CMAKE_MODULE_PATH}/import-std.cmake)
 # Include/Download Dependencies
 include(${CMAKE_MODULE_PATH}/Dependencies.cmake)
 
+# Include functions to enable compiling HLSL shaders
+include(${CMAKE_MODULE_PATH}/compile-hlsl.cmake)
+
 # project and language to be used
 project(sdl3-cpp23-project-template
 	LANGUAGES CXX
