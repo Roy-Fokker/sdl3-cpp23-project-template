@@ -1,45 +1,11 @@
 import std;
-import sdl;
+import application;
 
 auto main() -> int
 {
 	std::println("Current working dir: {}", std::filesystem::current_path().generic_string());
 
-	auto result = SDL_Init(SDL_INIT_VIDEO);
-	assert(result and "SDL could not be initialized.");
+	auto app = project::application({ 800, 600, "SDL3 C++ 23 Project Template" }, { SDL_GPU_SHADERFORMAT_SPIRV });
 
-	auto wnd = SDL::make_window(800, 600, "SDL C++ Project Template.");
-	auto gpu = SDL::make_gpu(SDL_GPU_SHADERFORMAT_SPIRV);
-
-	std::println("GPU Driver API: {}", SDL_GetGPUDeviceDriver(gpu.get()));
-
-	result = SDL_ClaimWindowForGPUDevice(gpu.get(), wnd.get());
-	assert(result and "Could not claim windows for gpu.");
-
-	auto quit = false;
-	auto evt  = SDL_Event{};
-	while (not quit)
-	{
-		while (SDL_PollEvent(&evt))
-		{
-			switch (evt.type)
-			{
-			case SDL_EVENT_QUIT:
-				quit = true;
-				break;
-			case SDL_EVENT_KEY_DOWN:
-				// TODO: Handle Inputs
-				quit = true;
-				break;
-			}
-		}
-
-		// TODO: State Updates
-		// TODO: Do Rendering
-	}
-
-	SDL_ReleaseWindowFromGPUDevice(gpu.get(), wnd.get());
-
-	SDL_Quit();
-	return 0;
+	return app.run();
 }

@@ -4,7 +4,7 @@ export module sdl;
 
 import std;
 
-export namespace SDL
+export namespace sdl
 {
 	namespace type
 	{
@@ -53,9 +53,9 @@ export namespace SDL
 		using gfx_sampler_ptr    = std::unique_ptr<SDL_GPUSampler, free_gpu_sampler>;
 	}
 
-	auto make_window(int width, int height, std::string_view title, SDL_WindowFlags flags = NULL) -> type::window_ptr
+	auto make_window(uint32_t width, uint32_t height, std::string_view title, SDL_WindowFlags flags = {}) -> type::window_ptr
 	{
-		auto window = SDL_CreateWindow(title.data(), width, height, flags);
+		auto window = SDL_CreateWindow(title.data(), static_cast<int>(width), static_cast<int>(height), flags);
 		assert(window != nullptr and "Window could not be created.");
 
 		// enable relative mouse movement
