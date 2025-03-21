@@ -4,6 +4,7 @@ export module application;
 
 import std;
 import sdl;
+import clock;
 
 namespace st = sdl::type;
 
@@ -59,6 +60,7 @@ export namespace project
 		{
 			prepare_scene();
 
+			clk.reset();
 			while (not quit)
 			{
 				handle_sdl_events();
@@ -66,7 +68,11 @@ export namespace project
 				update_state();
 
 				draw();
+
+				clk.tick();
 			}
+
+			std::println("Elapsed Time: {:.4f}s", clk.get_elapsed<clock::s>());
 			return 0;
 		}
 
@@ -81,6 +87,8 @@ export namespace project
 	private:
 		st::gpu_ptr gpu    = nullptr;
 		st::window_ptr wnd = nullptr;
+
+		clock clk;
 
 		bool quit     = false;
 		SDL_Event evt = {};
