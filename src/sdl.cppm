@@ -316,7 +316,7 @@ export namespace sdl
 		return {};
 	}
 
-	struct pipeline_builder
+	struct gfx_pipeline_builder
 	{
 		type::gfx_shader_ptr vertex_shader   = nullptr;
 		type::gfx_shader_ptr fragment_shader = nullptr;
@@ -343,10 +343,11 @@ export namespace sdl
 			auto enable_depth        = false;
 			auto depth_stencil_state = SDL_GPUDepthStencilState{};
 
+			// Surpringly AMD doesn't support D24 on Vulkan, it does on DirectX??
 			if (depth_stencil_format & (SDL_GPU_TEXTUREFORMAT_D16_UNORM |
-			                            SDL_GPU_TEXTUREFORMAT_D24_UNORM |
+			                            // SDL_GPU_TEXTUREFORMAT_D24_UNORM |
 			                            SDL_GPU_TEXTUREFORMAT_D32_FLOAT |
-			                            SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT |
+			                            // SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT |
 			                            SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT))
 			{
 				enable_depth = true;

@@ -75,6 +75,9 @@ export namespace project
 			}
 
 			std::println("Elapsed Time: {:.4f}s", clk.get_elapsed<clock::s>());
+
+			scn = {};
+
 			return 0;
 		}
 
@@ -94,6 +97,7 @@ export namespace project
 		struct scene
 		{
 			SDL_FColor clear_color;
+			st::gfx_pipeline_ptr basic_pipeline;
 		};
 
 		// Private members
@@ -110,6 +114,69 @@ export namespace project
 }
 
 using namespace project;
+using namespace sdl;
+using namespace sdl::type;
+
+namespace
+{
+	struct vertex
+	{
+		glm::vec3 pos;
+		glm::vec4 clr;
+	};
+
+	auto make_pipeline(SDL_GPUDevice *gpu, SDL_Window *wnd) -> gfx_pipeline_ptr
+	{
+		auto vs_shdr = shader_builder{
+			.shader_binary = io::read_file("shaders/basic.vs_6_4.cso"),
+			.stage         = shader_stage::vertex,
+		};
+
+		auto ps_shdr = shader_builder{
+			.shader_binary = io::read_file("shaders/basic.ps_6_4.cso"),
+			.stage         = shader_stage::fragment,
+		};
+
+		using VA = SDL_GPUVertexAttribute;
+		auto va  = std::array{
+            VA{
+			   .location    = 0,
+			   .buffer_slot = 0,
+			   .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
+			   .offset      = 0,
+            },
+            VA{
+			   .location    = 1,
+			   .buffer_slot = 0,
+			   .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
+			   .offset      = sizeof(glm::vec3),
+            },
+		};
+
+		using VBD = SDL_GPUVertexBufferDescription;
+		auto vbd  = std::array{
+            VBD{
+			   .slot       = 0,
+			   .pitch      = sizeof(vertex),
+			   .input_rate = SDL_GPU_VERTEXINPUTRATE_VERTEX,
+            },
+		};
+
+		auto pl = gfx_pipeline_builder{
+			.vertex_shader              = vs_shdr.build(gpu),
+			.fragment_shader            = ps_shdr.build(gpu),
+			.vertex_attributes          = va,
+			.vertex_buffer_descriptions = vbd,
+			.color_format               = SDL_GetGPUSwapchainTextureFormat(gpu, wnd),
+			.depth_stencil_format       = SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT,
+			.raster                     = raster_type::none_fill,
+			.blend                      = blend_type::none,
+			.topology                   = topology_type::triangle_list,
+		};
+
+		return pl.build(gpu);
+	}
+}
 
 void application::handle_sdl_events()
 {
@@ -161,6 +228,8 @@ void application::handle_sdl_input()
 void application::prepare_scene()
 {
 	scn.clear_color = { 0.2f, 0.2f, 0.4f, 1.0f };
+
+	scn.basic_pipeline = make_pipeline(gpu.get(), wnd.get());
 }
 
 void application::update_state()
