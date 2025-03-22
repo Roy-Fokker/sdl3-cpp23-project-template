@@ -33,7 +33,10 @@ function(target_hlsl_sources TARGET)
 	# Are we in debug mode?
 	string(TOLOWER ${CMAKE_BUILD_TYPE} compile_mode)
 	if (${compile_mode} STREQUAL "debug")
-		list(APPEND shader_pdb_options /Zi /Fd ${CMAKE_PDB_OUTPUT_DIRECTORY}/)
+		list(APPEND shader_pdb_options
+			/Zi 
+			#/Fd ${CMAKE_PDB_OUTPUT_DIRECTORY}/
+		)
 	endif()
 
 	# Loop through all the pairs for filename:profile provided
