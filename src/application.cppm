@@ -198,15 +198,15 @@ void application::handle_sdl_events()
 
 void application::handle_sdl_input()
 {
-	auto handle_keyboard = [&](const SDL_KeyboardEvent &key_evt) {
+	auto handle_keyboard = [&]([[maybe_unused]] const SDL_KeyboardEvent &key_evt) {
 		quit = true;
 	};
 
-	auto handle_mouse_motion = [&](const SDL_MouseMotionEvent &mouse_evt) {
+	auto handle_mouse_motion = [&]([[maybe_unused]] const SDL_MouseMotionEvent &mouse_evt) {
 
 	};
 
-	auto handle_mouse_wheel = [&](const SDL_MouseWheelEvent &wheel_evt) {
+	auto handle_mouse_wheel = [&]([[maybe_unused]] const SDL_MouseWheelEvent &wheel_evt) {
 
 	};
 
