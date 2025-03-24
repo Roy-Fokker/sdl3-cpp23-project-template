@@ -168,7 +168,7 @@ namespace
 			.vertex_attributes          = va,
 			.vertex_buffer_descriptions = vbd,
 			.color_format               = SDL_GetGPUSwapchainTextureFormat(gpu, wnd),
-			.depth_stencil_format       = SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT,
+			.enable_depth_stencil       = true,
 			.raster                     = raster_type::none_fill,
 			.blend                      = blend_type::none,
 			.topology                   = topology_type::triangle_list,

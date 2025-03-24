@@ -5,6 +5,9 @@ export module sdl;
 import std;
 import io;
 
+namespace rg = std::ranges;
+namespace vw = std::views;
+
 export namespace sdl
 {
 	// If we are building in DEBUG mode, use this variable to enable extra messages from SDL
@@ -256,6 +259,25 @@ export namespace sdl
 		return SDL_GPU_SHADERFORMAT_INVALID;
 	}
 
+	auto get_gpu_supported_depth_stencil_format(SDL_GPUDevice *gpu) -> SDL_GPUTextureFormat
+	{
+		constexpr auto depth_formats = std::array{
+			SDL_GPU_TEXTUREFORMAT_D16_UNORM,
+			SDL_GPU_TEXTUREFORMAT_D24_UNORM,
+			SDL_GPU_TEXTUREFORMAT_D32_FLOAT,
+			SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT,
+			SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT,
+		};
+
+		auto rng = depth_formats | vw::reverse | vw::filter([&](const auto fmt) {
+			return SDL_GPUTextureSupportsFormat(gpu, fmt, SDL_GPU_TEXTURETYPE_2D, SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET);
+		}) | vw::take(1);
+
+		assert(rng.begin() != rng.end() and "None of the depth formats are supported.");
+
+		return *rng.begin();
+	}
+
 	struct shader_builder
 	{
 		io::byte_array shader_binary   = {};
@@ -324,8 +346,9 @@ export namespace sdl
 		std::span<const SDL_GPUVertexAttribute> vertex_attributes                  = {};
 		std::span<const SDL_GPUVertexBufferDescription> vertex_buffer_descriptions = {};
 
-		SDL_GPUTextureFormat color_format         = {};
-		SDL_GPUTextureFormat depth_stencil_format = {};
+		SDL_GPUTextureFormat color_format = {};
+
+		bool enable_depth_stencil = false;
 
 		raster_type raster     = {};
 		blend_type blend       = {};
@@ -340,18 +363,12 @@ export namespace sdl
 				.num_vertex_attributes      = static_cast<uint32_t>(vertex_attributes.size()),
 			};
 
-			auto enable_depth        = false;
-			auto depth_stencil_state = SDL_GPUDepthStencilState{};
+			auto depth_stencil_state  = SDL_GPUDepthStencilState{};
+			auto depth_stencil_format = SDL_GPUTextureFormat{};
 
 			// Surpringly AMD doesn't support D24 on Vulkan, it does on DirectX??
-			if (depth_stencil_format & (SDL_GPU_TEXTUREFORMAT_D16_UNORM |
-			                            // SDL_GPU_TEXTUREFORMAT_D24_UNORM |
-			                            SDL_GPU_TEXTUREFORMAT_D32_FLOAT |
-			                            // SDL_GPU_TEXTUREFORMAT_D24_UNORM_S8_UINT |
-			                            SDL_GPU_TEXTUREFORMAT_D32_FLOAT_S8_UINT))
+			if (enable_depth_stencil)
 			{
-				enable_depth = true;
-
 				depth_stencil_state = SDL_GPUDepthStencilState{
 					.compare_op          = SDL_GPU_COMPAREOP_LESS,
 					.write_mask          = std::numeric_limits<uint8_t>::max(),
@@ -359,6 +376,8 @@ export namespace sdl
 					.enable_depth_write  = true,
 					.enable_stencil_test = false, // TODO: figure out how to enable stencil under current api
 				};
+
+				depth_stencil_format = get_gpu_supported_depth_stencil_format(gpu);
 			}
 
 			auto color_targets = std::array{
@@ -372,7 +391,7 @@ export namespace sdl
 				.color_target_descriptions = color_targets.data(),
 				.num_color_targets         = static_cast<uint32_t>(color_targets.size()),
 				.depth_stencil_format      = depth_stencil_format,
-				.has_depth_stencil_target  = enable_depth,
+				.has_depth_stencil_target  = enable_depth_stencil,
 			};
 
 			auto pipeline_info = SDL_GPUGraphicsPipelineCreateInfo{
