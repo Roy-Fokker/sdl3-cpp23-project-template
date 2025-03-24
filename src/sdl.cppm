@@ -186,7 +186,7 @@ export namespace sdl
 		return {};
 	}
 
-	enum class blend_type
+	enum class blend_type : uint8_t
 	{
 		none,
 		opaque,
