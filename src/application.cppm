@@ -41,16 +41,12 @@ export namespace project
 			assert(result and "SDL could not be initialized.");
 
 			wnd = sdl::make_window(wnd_info.width, wnd_info.height, wnd_info.title, wnd_info.flags);
-			gpu = sdl::make_gpu(gpu_info.shader_format);
+			gpu = sdl::make_gpu(wnd.get(), gpu_info.shader_format);
 
 			std::println("GPU Driver API: {}", SDL_GetGPUDeviceDriver(gpu.get()));
-
-			result = SDL_ClaimWindowForGPUDevice(gpu.get(), wnd.get());
-			assert(result and "Could not claim windows for gpu.");
 		}
 		~application()
 		{
-			SDL_ReleaseWindowFromGPUDevice(gpu.get(), wnd.get());
 
 			gpu = {};
 			wnd = {};

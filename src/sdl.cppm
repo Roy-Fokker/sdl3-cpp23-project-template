@@ -29,10 +29,24 @@ export namespace sdl
 				fn(arg);
 			}
 		};
-		// Define SDL types with std::unique_ptr and custom deleter
-		using gpu_ptr    = std::unique_ptr<SDL_GPUDevice, sdl_deleter<SDL_DestroyGPUDevice>>;
+		// Define SDL type with std::unique_ptr and custom deleter
 		using window_ptr = std::unique_ptr<SDL_Window, sdl_deleter<SDL_DestroyWindow>>;
 
+		// Special deleter for gpu.
+		// it will release window on destruction
+		struct gpu_window_deleter
+		{
+			SDL_Window *window;
+			constexpr void operator()(auto *gpu)
+			{
+				SDL_ReleaseWindowFromGPUDevice(gpu, window);
+				SDL_DestroyGPUDevice(gpu);
+			}
+		};
+		// Define GPU type with std::unique_ptr and custom deleter
+		using gpu_ptr = std::unique_ptr<SDL_GPUDevice, gpu_window_deleter>;
+
+		// Deleter for all gpu objects in SDL
 		template <auto fn>
 		struct gpu_deleter
 		{
@@ -68,12 +82,16 @@ export namespace sdl
 		return type::window_ptr{ window };
 	}
 
-	auto make_gpu(SDL_GPUShaderFormat preferred_shader_format) -> type::gpu_ptr
+	// make_gpu does not take ownership of *wnd. *wnd must stay alive for duration of gpu_ptr.
+	auto make_gpu(SDL_Window *wnd, SDL_GPUShaderFormat preferred_shader_format) -> type::gpu_ptr
 	{
 		auto gpu = SDL_CreateGPUDevice(preferred_shader_format, IS_DEBUG, NULL);
 		assert(gpu != nullptr and "GPU device could not be created.");
 
-		return type::gpu_ptr{ gpu };
+		auto result = SDL_ClaimWindowForGPUDevice(gpu, wnd);
+		assert(result == true and "Could not claim window for GPU.");
+
+		return type::gpu_ptr{ gpu, { wnd } };
 	}
 
 	auto next_swapchain_image(SDL_Window *wnd, SDL_GPUCommandBuffer *cmd_buf) -> SDL_GPUTexture *
