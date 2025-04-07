@@ -4,6 +4,7 @@
 - CPM.CMake for package management
 - Ninja-Build for build engine
 - CMake 3.31+ with cmakepresets for configuration and build
+  - There is an issue, on my machine, with CMake 4.0. It fails to configure properly.
 - C++ modules enabled
 - Uses C++ Standard Library modules
   - MSVC (Windows only)
