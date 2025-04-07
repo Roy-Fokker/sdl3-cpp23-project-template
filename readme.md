@@ -39,6 +39,11 @@ Uses following libraries retrieved from their project repos by CPM.CMake
 - GLM, for math
 - DXC, either from Windows SDK (for D3D12 backend) or Vulkan SDK (for Vulkan backend)
 
+## Basic notes on code structure
+- As much as is possible, functions will not take ownership of pointers to objects.
+- Where able, all SDL GPU types are wrapped into std::unique_ptr with custom deleters, so they self clean on destruction.
+- TODO: more notes to be added as, I think of them.
+
 ## references
 - Building on linux with Clang and libc++ for module support, https://mattbolitho.github.io/posts/vcpkg-with-libcxx/
 - CMake 3.30 magic encantations, https://www.kitware.com/import-std-in-cmake-3-30/
