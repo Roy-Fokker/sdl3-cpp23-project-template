@@ -113,6 +113,8 @@ export namespace sdl
 		compute,
 	};
 
+	// Does not convert shader_stage::compute
+	// as graphics pipeline cannot use that value, and SDL does not provide SDL_GPUShaderStage value for it.
 	auto to_sdl(shader_stage stage) -> SDL_GPUShaderStage
 	{
 		switch (stage)
