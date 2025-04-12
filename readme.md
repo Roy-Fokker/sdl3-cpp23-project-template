@@ -5,6 +5,7 @@
 - Ninja-Build for build engine
 - CMake 3.31+ with cmakepresets for configuration and build
   - There is an issue, on my machine, with CMake 4.0. It fails to configure properly.
+  - CMake 4.0.1 fixed the issue with configure, seems like it was regression in CMake.
 - C++ modules enabled
 - Uses C++ Standard Library modules
   - MSVC (Windows only)

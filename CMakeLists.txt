@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.31)
+cmake_minimum_required(VERSION 4.0)
 
 # Enable scan for dependencies
 set(CXX_SCAN_FOR_MODULES ON)
