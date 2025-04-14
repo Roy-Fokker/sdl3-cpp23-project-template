@@ -1,4 +1,4 @@
-# get platform specific configs
+﻿# get platform specific configs
 if(MSVC)
 	include(${CMAKE_MODULE_PATH}/Win32Presets.cmake)
 elseif(LINUX)
@@ -32,6 +32,7 @@ target_compile_definitions(${PRJ_APP_NAME}
 # precompiled headers
 target_precompile_headers(${PRJ_APP_NAME}
 	PRIVATE
+		pch_std.hpp
 		pch.hpp
 )
 
