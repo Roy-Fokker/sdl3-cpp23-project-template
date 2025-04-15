@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 4.0)
 
 # Enable scan for dependencies
-set(CXX_SCAN_FOR_MODULES ON)
+set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 # disable C++ extensions
 set(CMAKE_CXX_EXTENSIONS OFF)
 # force C++ version to 23
