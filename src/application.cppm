@@ -37,9 +37,6 @@ export namespace project
 		// Public API
 		application(const window_info &wnd_info, const gpu_info &gpu_info)
 		{
-			auto result = SDL_Init(SDL_INIT_VIDEO);
-			assert(result and "SDL could not be initialized.");
-
 			wnd = sdl::make_window(wnd_info.width, wnd_info.height, wnd_info.title, wnd_info.flags);
 			gpu = sdl::make_gpu(wnd.get(), gpu_info.shader_format);
 
@@ -50,8 +47,6 @@ export namespace project
 
 			gpu = {};
 			wnd = {};
-
-			SDL_Quit();
 		}
 
 		auto run() -> int
@@ -88,6 +83,9 @@ export namespace project
 
 		// Show on screen
 		void draw();
+
+		// SDL base object
+		sdl::sdl_base sdl_o = {};
 
 		// Structure to hold scene objects
 		struct scene
@@ -135,27 +133,27 @@ namespace
 
 		using VA = SDL_GPUVertexAttribute;
 		auto va  = std::array{
-			VA{
+            VA{
 			   .location    = 0,
 			   .buffer_slot = 0,
 			   .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
 			   .offset      = 0,
-			},
-			VA{
+            },
+            VA{
 			   .location    = 1,
 			   .buffer_slot = 0,
 			   .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
 			   .offset      = sizeof(glm::vec3),
-			},
+            },
 		};
 
 		using VBD = SDL_GPUVertexBufferDescription;
 		auto vbd  = std::array{
-			VBD{
+            VBD{
 			   .slot       = 0,
 			   .pitch      = sizeof(vertex),
 			   .input_rate = SDL_GPU_VERTEXINPUTRATE_VERTEX,
-			},
+            },
 		};
 
 		auto pl = gfx_pipeline_builder{

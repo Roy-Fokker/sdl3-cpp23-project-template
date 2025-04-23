@@ -17,6 +17,24 @@ export namespace sdl
 #endif
 	};
 
+	// SDL requires call init and quit functions.
+	// This class does that, it only needs to init in class.
+	// Object should be created before any other SDL type.
+	class sdl_base
+	{
+	public:
+		sdl_base()
+		{
+			auto result = SDL_Init(SDL_INIT_VIDEO);
+			assert(result and "SDL could not be initialized.");
+		}
+
+		~sdl_base()
+		{
+			SDL_Quit();
+		}
+	};
+
 	namespace type
 	{
 		// Deleter template, for use with SDL objects.
