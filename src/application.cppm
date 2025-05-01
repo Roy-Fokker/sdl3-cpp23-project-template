@@ -8,6 +8,13 @@ import clock;
 import io;
 
 namespace st = sdl::type;
+using namespace std::literals;
+
+namespace
+{
+	constexpr auto WND_WIDTH  = 800u;
+	constexpr auto WND_HEIGHT = 600u;
+}
 
 export namespace project
 {
@@ -20,27 +27,13 @@ export namespace project
 		application(application &&)                          = default; // defaulted move c'tor
 		auto operator=(application &&) -> application &      = default; // defaulted move c'tor
 
-		// Public structures to start the application
-		struct window_info
-		{
-			uint32_t width;
-			uint32_t height;
-			std::string_view title;
-			SDL_WindowFlags flags = {};
-		};
-
-		struct gpu_info
-		{
-			SDL_GPUShaderFormat shader_format;
-		};
-
 		// Public API
-		application(const window_info &wnd_info, const gpu_info &gpu_info)
+		application()
 		{
-			wnd = sdl::make_window(wnd_info.width, wnd_info.height, wnd_info.title, wnd_info.flags);
-			gpu = sdl::make_gpu(wnd.get(), gpu_info.shader_format);
+			constexpr auto WND_TITLE = "SDL3 C++ 23 Project Template"sv;
 
-			std::println("GPU Driver API: {}", SDL_GetGPUDeviceDriver(gpu.get()));
+			wnd = sdl::make_window(WND_WIDTH, WND_HEIGHT, WND_TITLE, {});
+			gpu = sdl::make_gpu(wnd.get(), SDL_GPU_SHADERFORMAT_SPIRV);
 		}
 		~application() = default;
 
@@ -215,7 +208,7 @@ namespace
 	auto make_perspective() -> glm::mat4
 	{
 		constexpr auto fovy         = glm::radians(60.f);
-		constexpr auto aspect_ratio = 5.f / 4.f; // should be based on Window width/height
+		constexpr auto aspect_ratio = static_cast<float>(WND_WIDTH) / static_cast<float>(WND_HEIGHT);
 		constexpr auto near_plane   = 0.1f;
 		constexpr auto far_plane    = 10.f;
 

@@ -106,6 +106,8 @@ export namespace sdl
 		auto gpu = SDL_CreateGPUDevice(preferred_shader_format, IS_DEBUG, NULL);
 		assert(gpu != nullptr and "GPU device could not be created.");
 
+		std::println("GPU Driver API: {}", SDL_GetGPUDeviceDriver(gpu));
+
 		auto result = SDL_ClaimWindowForGPUDevice(gpu, wnd);
 		assert(result == true and "Could not claim window for GPU.");
 
