@@ -12,10 +12,18 @@ struct Output
 	float4 Position : SV_Position;
 };
 
+struct Uniform_Data
+{
+	float4x4 proj;
+};
+ConstantBuffer<Uniform_Data> mvp : register(b0, space1);
+
 Output main(Input input)
 {
 	Output output;
 	output.Color = input.Color;
-	output.Position = float4(input.Position, 1.0f);
+	float4 pos = float4(input.Position, 1.0f);
+	output.Position = mul(mvp.proj, pos);
+	
 	return output;
 }
