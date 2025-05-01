@@ -42,12 +42,7 @@ export namespace project
 
 			std::println("GPU Driver API: {}", SDL_GetGPUDeviceDriver(gpu.get()));
 		}
-		~application()
-		{
-
-			gpu = {};
-			wnd = {};
-		}
+		~application() = default;
 
 		auto run() -> int
 		{
@@ -67,8 +62,6 @@ export namespace project
 
 			std::println("Elapsed Time: {:.4f}s", clk.get_elapsed<clock::s>());
 
-			scn = {};
-
 			return 0;
 		}
 
@@ -83,9 +76,6 @@ export namespace project
 
 		// Show on screen
 		void draw();
-
-		// SDL base object
-		sdl::sdl_base sdl_o = {};
 
 		// Structure to hold scene objects
 		struct scene
@@ -171,7 +161,7 @@ namespace
 			.vertex_attributes          = va,
 			.vertex_buffer_descriptions = vbd,
 			.color_format               = SDL_GetGPUSwapchainTextureFormat(gpu, wnd),
-			.enable_depth_stencil       = true,
+			.enable_depth_stencil       = false,
 			.raster                     = raster_type::none_fill,
 			.blend                      = blend_type::none,
 			.topology                   = topology_type::triangle_list,
@@ -254,7 +244,6 @@ void application::handle_sdl_input()
 	case SDL_EVENT_KEY_DOWN:
 		handle_keyboard(evt.key);
 		break;
-
 	case SDL_EVENT_MOUSE_MOTION:
 		handle_mouse_motion(evt.motion);
 		break;
@@ -266,8 +255,7 @@ void application::handle_sdl_input()
 
 void application::prepare_scene()
 {
-	scn.clear_color = { 0.2f, 0.2f, 0.4f, 1.0f };
-
+	scn.clear_color    = { 0.2f, 0.2f, 0.4f, 1.0f };
 	scn.basic_pipeline = make_pipeline(gpu.get(), wnd.get());
 
 	auto sqr_msh     = make_square();
