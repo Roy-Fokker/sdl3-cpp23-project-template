@@ -1,23 +1,17 @@
 # SDL3 + C++23 Project Template
+---
+Template project to play around with SDL3 GPU API with C++23 using modules.
 
-## Uses
-- CPM.CMake for package management
-- Ninja-Build for build engine
-- CMake 3.31+ with cmakepresets for configuration and build
-  - There is an issue, on my machine, with CMake 4.0. It fails to configure properly.
-  - CMake 4.0.1 fixed the issue with configure, seems like it was regression in CMake.
-- C++ modules enabled
-- Uses C++ Standard Library modules
-  - MSVC (Windows only)
-  - Clang (Linux with libc++ only)
-- Focuses on SDL3 GPU
-- HLSL for all shaders
+## Using the template
+### Project Config
+- In root `CMakeLists.txt` change `project name`, `url`, and `description`.
+- In `src/CMakeLists.txt` change `PRJ_APP_NAME`
+- Ensure `dxc` shader compiler is findable by CMake, 
+  - Found in Vulkan SDK when using Vulkan backend
+  - If using D3D12 backend it is found in Windows SDK
+    - *Remove* ~HINTS~ and ~PATH~ of `find_program` statement in `cmake/compile-hlsl.cmake`
 
-## to be figured out
-- Intellisense and clangd both cannot handle modules so don't work correctly
-- Should be able to change from CPM.CMake to vcpkg
-
-## CMake commands
+### CMake commands for configuring and building
 VSCode will run these automatically.
 - On Windows
 ```shell
@@ -34,18 +28,43 @@ VSCode will run these automatically.
   cmake --build --preset linux-debug
 ```
 
+## Uses/Dependencies
+- CPM.CMake for package management
+- Ninja-Build for build engine
+- CMake 3.31+ with cmakepresets for configuration and build
+  - There is an issue, on my machine, with CMake 4.0. It fails to configure properly.
+  - CMake 4.0.1 fixed the issue with configure, seems like it was regression in CMake.
+- C++ modules enabled
+- Uses C++ Standard Library modules
+  - MSVC (Windows only)
+  - Clang (Linux with libc++ only)
+- Focuses on SDL3 GPU
+- HLSL for all shaders
+
 ## Example project dependencies
 Uses following libraries retrieved from their project repos by CPM.CMake
 - SDL3, obviously
 - GLM, for math
-- DXC, either from Windows SDK (for D3D12 backend) or Vulkan SDK (for Vulkan backend)
+- DXC, from Vulkan SDK (for Vulkan backend)
 
 ## Basic notes on code structure
 - As much as is possible, functions will not take ownership of pointers to objects.
-- Where able, all SDL GPU types are wrapped into std::unique_ptr with custom deleters, so they self clean on destruction.
-- TODO: more notes to be added as, I think of them.
+- Where able, all SDL GPU types are wrapped into std::unique_ptr with custom deleters, so they self clean on scope exit.
+- SDL init and quit is wrapped in C++ class and created/destructed by Application class.
+- `Application` class does following
+  - Create SDL Window and GPU, in Application `C'Tor`
+  - Create Basic Pipeline, in `Prepare Scene`
+    - Simple vertex shader that uses uniform buffer to fix rendering perspective
+    - Simple pixel/fragment shader
+  - Vertex and Index buffers for Square mesh, in `Prepare Scene`
+  - Create Perpective projection, in `Prepare Scene`
+  - `Draw`s square using Indexed Primitives
+  - Quit on any-key pressed, in `Handle SDL Input`
+
+## To be figured out
+- Intellisense and clangd both cannot handle modules so don't work correctly
+  - Hacky solution for intellisense to show STD library types.
 
 ## references
-- Building on linux with Clang and libc++ for module support, https://mattbolitho.github.io/posts/vcpkg-with-libcxx/
 - CMake 3.30 magic encantations, https://www.kitware.com/import-std-in-cmake-3-30/
 - CMake module compilations, https://www.kitware.com/import-cmake-the-experiment-is-over/
