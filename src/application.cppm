@@ -92,18 +92,21 @@ export namespace project
 		{
 			SDL_FColor clear_color;
 			st::gfx_pipeline_ptr basic_pipeline;
+			st::gpu_buffer_ptr vertex_buffer;
+			st::gpu_buffer_ptr index_buffer;
+			uint32_t vertex_count;
+			uint32_t index_count;
 		};
 
 		// Private members
-		st::gpu_ptr gpu    = nullptr;
-		st::window_ptr wnd = nullptr;
+		sdl::sdl_base sdl_o = {};      // SDL base object
+		st::window_ptr wnd  = nullptr; // SDL window object
+		st::gpu_ptr gpu     = nullptr; // SDL GPU object
+		SDL_Event evt       = {};      // SDL Event object
+		scene scn           = {};      // Project's Render context;
 
 		clock clk = {};
-
-		bool quit     = false;
-		SDL_Event evt = {};
-
-		scene scn = {};
+		bool quit = false;
 	};
 }
 
@@ -117,6 +120,12 @@ namespace
 	{
 		glm::vec3 pos;
 		glm::vec4 clr;
+	};
+
+	struct mesh
+	{
+		std::vector<vertex> vertices;
+		std::vector<uint32_t> indices;
 	};
 
 	auto make_pipeline(SDL_GPUDevice *gpu, SDL_Window *wnd) -> gfx_pipeline_ptr
@@ -169,6 +178,42 @@ namespace
 		};
 
 		return pl.build(gpu);
+	}
+
+	auto make_square() -> mesh
+	{
+		constexpr auto x = 0.5f;
+		constexpr auto y = 0.5f;
+
+		return {
+			.vertices = {
+			  { { -x, +y, 0.f }, { 0.f, 0.f, 1.f, 1.f } },
+			  { { +x, +y, 0.f }, { 1.f, 0.f, 0.f, 1.f } },
+			  { { +x, -y, 0.f }, { 0.f, 1.f, 0.f, 1.f } },
+			  { { -x, -y, 0.f }, { 0.f, 1.f, 1.f, 1.f } },
+			},
+			.indices = {
+			  0, 1, 2, // face 1
+			  2, 3, 0, // face 2
+			},
+		};
+	}
+
+	auto upload_mesh(SDL_GPUDevice *gpu, const mesh &msh) -> std::tuple<st::gpu_buffer_ptr, st::gpu_buffer_ptr>
+	{
+		auto vtx_bytes = io::as_byte_span(msh.vertices);
+		auto idx_bytes = io::as_byte_span(msh.indices);
+
+		auto vbo = make_gpu_buffer(gpu, SDL_GPU_BUFFERUSAGE_VERTEX, static_cast<uint32_t>(vtx_bytes.size()), "Vertex Buffer");
+		upload_to_gpu(gpu, vbo.get(), vtx_bytes);
+
+		auto ibo = make_gpu_buffer(gpu, SDL_GPU_BUFFERUSAGE_INDEX, static_cast<uint32_t>(idx_bytes.size()), "Index Buffer");
+		upload_to_gpu(gpu, ibo.get(), idx_bytes);
+
+		return {
+			std::move(vbo),
+			std::move(ibo)
+		};
 	}
 }
 
@@ -224,6 +269,12 @@ void application::prepare_scene()
 	scn.clear_color = { 0.2f, 0.2f, 0.4f, 1.0f };
 
 	scn.basic_pipeline = make_pipeline(gpu.get(), wnd.get());
+
+	auto sqr_msh     = make_square();
+	scn.vertex_count = static_cast<uint32_t>(sqr_msh.vertices.size());
+	scn.index_count  = static_cast<uint32_t>(sqr_msh.indices.size());
+
+	std::tie(scn.vertex_buffer, scn.index_buffer) = upload_mesh(gpu.get(), sqr_msh);
 }
 
 void application::update_state()
@@ -246,6 +297,23 @@ void application::draw()
 
 	auto render_pass = SDL_BeginGPURenderPass(cmd_buf, &color_target, 1, nullptr);
 	{
+		SDL_BindGPUGraphicsPipeline(render_pass, scn.basic_pipeline.get());
+
+		auto vertex_bindings = std::array{
+			SDL_GPUBufferBinding{
+			  .buffer = scn.vertex_buffer.get(),
+			  .offset = 0,
+			},
+		};
+		SDL_BindGPUVertexBuffers(render_pass, 0, vertex_bindings.data(), static_cast<uint32_t>(vertex_bindings.size()));
+
+		auto index_binding = SDL_GPUBufferBinding{
+			.buffer = scn.index_buffer.get(),
+			.offset = 0,
+		};
+		SDL_BindGPUIndexBuffer(render_pass, &index_binding, SDL_GPU_INDEXELEMENTSIZE_32BIT);
+
+		SDL_DrawGPUIndexedPrimitives(render_pass, scn.index_count, 1, 0, 0, 0);
 	}
 	SDL_EndGPURenderPass(render_pass);
 	SDL_SubmitGPUCommandBuffer(cmd_buf);

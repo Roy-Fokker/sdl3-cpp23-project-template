@@ -450,4 +450,59 @@ export namespace sdl
 		}
 	};
 
+	auto make_gpu_buffer(SDL_GPUDevice *gpu, SDL_GPUBufferUsageFlags usage, uint32_t size, std::string_view debug_name) -> type::gpu_buffer_ptr
+	{
+		auto buffer_info = SDL_GPUBufferCreateInfo{
+			.usage = usage,
+			.size  = size,
+		};
+
+		auto buffer = SDL_CreateGPUBuffer(gpu, &buffer_info);
+		assert(buffer != nullptr and "Failed to create gpu buffer");
+
+		if (IS_DEBUG and debug_name.size() > 0)
+		{
+			SDL_SetGPUBufferName(gpu, buffer, debug_name.data());
+		}
+
+		return { buffer, { gpu } };
+	}
+
+	void upload_to_gpu(SDL_GPUDevice *gpu, SDL_GPUBuffer *buffer, io::byte_span src_data)
+	{
+		auto src_size = static_cast<uint32_t>(src_data.size());
+
+		auto transfer_info = SDL_GPUTransferBufferCreateInfo{
+			.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+			.size  = src_size,
+		};
+		auto transfer_buffer = SDL_CreateGPUTransferBuffer(gpu, &transfer_info);
+		assert(transfer_buffer != nullptr and "Failed to create transfer buffer.");
+
+		auto dst_data = SDL_MapGPUTransferBuffer(gpu, transfer_buffer, false);
+		std::memcpy(dst_data, src_data.data(), src_size);
+		SDL_UnmapGPUTransferBuffer(gpu, transfer_buffer);
+
+		auto copy_cmd = SDL_AcquireGPUCommandBuffer(gpu);
+		{
+			auto copy_pass = SDL_BeginGPUCopyPass(copy_cmd);
+			{
+				auto src = SDL_GPUTransferBufferLocation{
+					.transfer_buffer = transfer_buffer,
+					.offset          = 0,
+				};
+
+				auto dst = SDL_GPUBufferRegion{
+					.buffer = buffer,
+					.offset = 0,
+					.size   = src_size,
+				};
+
+				SDL_UploadToGPUBuffer(copy_pass, &src, &dst, false);
+			}
+			SDL_EndGPUCopyPass(copy_pass);
+			SDL_SubmitGPUCommandBuffer(copy_cmd);
+		}
+		SDL_ReleaseGPUTransferBuffer(gpu, transfer_buffer);
+	}
 }
