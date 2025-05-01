@@ -86,6 +86,11 @@ export namespace project
 			st::gpu_buffer_ptr index_buffer;
 			uint32_t vertex_count;
 			uint32_t index_count;
+
+			struct uniform_data
+			{
+				glm::mat4 projection;
+			} mvp;
 		};
 
 		// Private members
@@ -121,8 +126,9 @@ namespace
 	auto make_pipeline(SDL_GPUDevice *gpu, SDL_Window *wnd) -> gfx_pipeline_ptr
 	{
 		auto vs_shdr = shader_builder{
-			.shader_binary = io::read_file("shaders/basic.vs_6_4.cso"),
-			.stage         = shader_stage::vertex,
+			.shader_binary        = io::read_file("shaders/basic.vs_6_4.cso"),
+			.stage                = shader_stage::vertex,
+			.uniform_buffer_count = 1,
 		};
 
 		auto ps_shdr = shader_builder{
@@ -177,10 +183,10 @@ namespace
 
 		return {
 			.vertices = {
-			  { { -x, +y, 0.f }, { 0.f, 0.f, 1.f, 1.f } },
-			  { { +x, +y, 0.f }, { 1.f, 0.f, 0.f, 1.f } },
-			  { { +x, -y, 0.f }, { 0.f, 1.f, 0.f, 1.f } },
-			  { { -x, -y, 0.f }, { 0.f, 1.f, 1.f, 1.f } },
+			  { { -x, +y, 1.f }, { 0.f, 0.f, 1.f, 1.f } },
+			  { { +x, +y, 1.f }, { 1.f, 0.f, 0.f, 1.f } },
+			  { { +x, -y, 1.f }, { 0.f, 1.f, 0.f, 1.f } },
+			  { { -x, -y, 1.f }, { 0.f, 1.f, 1.f, 1.f } },
 			},
 			.indices = {
 			  0, 1, 2, // face 1
@@ -189,7 +195,7 @@ namespace
 		};
 	}
 
-	auto upload_mesh(SDL_GPUDevice *gpu, const mesh &msh) -> std::tuple<st::gpu_buffer_ptr, st::gpu_buffer_ptr>
+	auto upload_mesh(SDL_GPUDevice *gpu, const mesh &msh)
 	{
 		auto vtx_bytes = io::as_byte_span(msh.vertices);
 		auto idx_bytes = io::as_byte_span(msh.indices);
@@ -200,10 +206,20 @@ namespace
 		auto ibo = make_gpu_buffer(gpu, SDL_GPU_BUFFERUSAGE_INDEX, static_cast<uint32_t>(idx_bytes.size()), "Index Buffer");
 		upload_to_gpu(gpu, ibo.get(), idx_bytes);
 
-		return {
+		return std::pair{
 			std::move(vbo),
 			std::move(ibo)
 		};
+	}
+
+	auto make_perspective() -> glm::mat4
+	{
+		constexpr auto fovy         = glm::radians(60.f);
+		constexpr auto aspect_ratio = 5.f / 4.f; // should be based on Window width/height
+		constexpr auto near_plane   = 0.1f;
+		constexpr auto far_plane    = 10.f;
+
+		return glm::perspective(fovy, aspect_ratio, near_plane, far_plane);
 	}
 }
 
@@ -263,6 +279,8 @@ void application::prepare_scene()
 	scn.index_count  = static_cast<uint32_t>(sqr_msh.indices.size());
 
 	std::tie(scn.vertex_buffer, scn.index_buffer) = upload_mesh(gpu.get(), sqr_msh);
+
+	scn.mvp.projection = make_perspective();
 }
 
 void application::update_state()
@@ -273,6 +291,10 @@ void application::draw()
 {
 	auto cmd_buf = SDL_AcquireGPUCommandBuffer(gpu.get());
 	assert(cmd_buf != nullptr and "Failed to acquire command buffer.");
+
+	// Push Uniform buffer
+	auto mvp_bytes = io::as_byte_span(scn.mvp);
+	SDL_PushGPUVertexUniformData(cmd_buf, 0, mvp_bytes.data(), static_cast<uint32_t>(mvp_bytes.size()));
 
 	auto sc_img = sdl::next_swapchain_image(wnd.get(), cmd_buf);
 
