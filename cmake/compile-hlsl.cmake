@@ -1,26 +1,31 @@
-# HLSL compiler
-# Find DXC from Vulkan SDK.
-
-find_program(DXC 
-	NAMES dxc dxc.exe
-	HINTS $ENV{VULKAN_SDK}/bin /usr/bin
-	PATHS $ENV{VULKAN_SDK}/bin /usr/bin
-	DOC "DirectX 12 shader compiler from Vulkan SDK"
-	NO_DEFAULT_PATH
-)
-if ("${DXC}" STREQUAL "DXC-NOTFOUND")
-	message(FATAL_ERROR "[Error]: DirectX Shader Compiler not found")
-endif()
-message(STATUS "[Info]: Found DirectX Shader Compiler - ${DXC}")
-
 #---------------------------------------------------------------------------------------
 # Function to take shader file and compile it as dependency of program
 
-function(target_hlsl_sources TARGET)
+function(target_hlsl_sources TARGET SHADER_FORMAT)
+	# HLSL compiler
+	# Find DXC from Vulkan SDK or Windows SDK.
+	if (SHADER_FORMAT MATCHES "SPIR-V")
+		find_program(DXC 
+			NAMES dxc dxc.exe
+			HINTS $ENV{VULKAN_SDK}/bin /usr/bin
+			PATHS $ENV{VULKAN_SDK}/bin /usr/bin
+			DOC "DirectX 12 shader compiler from Vulkan SDK"
+			NO_CACHE
+			NO_DEFAULT_PATH
+		)
+	elseif(SHADER_FORMAT MATCHES "DXIL")
+		find_program(DXC 
+			NAMES dxc dxc.exe
+			DOC "DirectX 12 shader compiler from Windows SDK"
+			NO_CACHE
+		)
+	endif()
+
 	if ("${DXC}" STREQUAL "DXC-NOTFOUND")
 		message(FATAL_ERROR "[Error]: DirectX Shader Compiler not found")
 	endif()
-
+	message(STATUS "[Info]: Found DirectX Shader Compiler - ${DXC}")
+	message(STATUS "[Info]: Compiling Shaders in ${SHADER_FORMAT} format")
 
 	# figure out how many files we have to configure given the pattern
 	list(LENGTH ARGN count_HLSL)
@@ -30,15 +35,23 @@ function(target_hlsl_sources TARGET)
 	set(shader_files "")
 	set(shader_sources "")
 
+	# Are we using Vulkan SDK's dxc?
+	set(use_spirv "")
+	if (SHADER_FORMAT MATCHES "SPIR-V")
+		set(use_spirv "-spirv")
+	endif()
+	
 	# Are we in debug mode?
 	string(TOLOWER ${CMAKE_BUILD_TYPE} compile_mode)
 	if (${compile_mode} STREQUAL "debug")
-		list(APPEND shader_pdb_options
-			/Zi 
-			#/Fd ${CMAKE_PDB_OUTPUT_DIRECTORY}/
-		)
-	endif()
+		list(APPEND shader_pdb_options /Zi)
 
+		# Are we using Windows SDK's dxc?
+		if (SHADER_FORMAT MATCHES "DXIL")
+			list(APPEND shader_pdb_options /Fd ${CMAKE_PDB_OUTPUT_DIRECTORY}/)
+		endif()
+	endif()
+	
 	# Loop through all the pairs for filename:profile provided
 	foreach(i RANGE 1 ${count_HLSL})
 		math(EXPR fni "(${i}-1)*3")              # filename index
@@ -71,7 +84,7 @@ function(target_hlsl_sources TARGET)
 		add_custom_command(
 			OUTPUT ${output}
 			COMMAND ${CMAKE_COMMAND} -E make_directory ${shader_dir}
-			COMMAND ${DXC} -spirv -E main -Fo ${output} -T ${hlsl_profile} ${source_abs} ${shader_pdb_options}
+			COMMAND ${DXC} ${use_spirv} -E main -Fo ${output} -T ${hlsl_profile} ${source_abs} ${shader_pdb_options}
 			DEPENDS ${source_abs}
 			COMMENT "DXC Compiling SPIRV: ${hlsl_filename} -> ${output}"
 			VERBATIM
