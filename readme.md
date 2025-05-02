@@ -7,9 +7,9 @@ Template project to play around with SDL3 GPU API with C++23 using modules.
 - In root `CMakeLists.txt` change `project name`, `url`, and `description`.
 - In `src/CMakeLists.txt` change `PRJ_APP_NAME`
 - Ensure `dxc` shader compiler is findable by CMake, 
-  - Found in Vulkan SDK when using Vulkan backend
-  - If using D3D12 backend it is found in Windows SDK
-    - *Remove* ~HINTS~ and ~PATH~ of `find_program` statement in `cmake/compile-hlsl.cmake`
+  - `target_hlsl_sources` cmake function accepts shader format as option.
+    It will choose DXC location based on shader format in `src/CMakeLists.txt`
+	Supports either SPIR-V or DXIL (DXIL is windows only)
 
 ### CMake commands for configuring and building
 VSCode will run these automatically.

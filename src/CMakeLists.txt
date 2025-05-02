@@ -58,7 +58,7 @@ target_link_libraries(${PRJ_APP_NAME}
 )
 
 # shaders used by this project
-target_hlsl_sources(${PRJ_APP_NAME}
+target_hlsl_sources(${PRJ_APP_NAME} SPIR-V
 	shaders/basic.vs.hlsl : vs_6_4
 	shaders/basic.ps.hlsl : ps_6_4
 )
