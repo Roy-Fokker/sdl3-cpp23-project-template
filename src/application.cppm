@@ -80,6 +80,8 @@ export namespace project
 			uint32_t vertex_count;
 			uint32_t index_count;
 
+			st::gpu_texture_ptr depth_texture;
+
 			struct uniform_data
 			{
 				glm::mat4 projection;
@@ -160,7 +162,7 @@ namespace
 			.vertex_attributes          = va,
 			.vertex_buffer_descriptions = vbd,
 			.color_format               = SDL_GetGPUSwapchainTextureFormat(gpu, wnd),
-			.enable_depth_stencil       = false,
+			.enable_depth_stencil       = true,
 			.raster                     = raster_type::none_fill,
 			.blend                      = blend_type::none,
 			.topology                   = topology_type::triangle_list,
@@ -203,6 +205,26 @@ namespace
 			std::move(vbo),
 			std::move(ibo)
 		};
+	}
+
+	auto make_depth_texture(SDL_GPUDevice *gpu, SDL_Window *wnd) -> gpu_texture_ptr
+	{
+		auto w = 0;
+		auto h = 0;
+		SDL_GetWindowSizeInPixels(wnd, &w, &h);
+
+		auto texture_info = SDL_GPUTextureCreateInfo{
+			.type                 = SDL_GPU_TEXTURETYPE_2D,
+			.format               = get_gpu_supported_depth_stencil_format(gpu),
+			.usage                = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET,
+			.width                = static_cast<uint32_t>(w),
+			.height               = static_cast<uint32_t>(h),
+			.layer_count_or_depth = 1,
+			.num_levels           = 1,
+			.sample_count         = SDL_GPU_SAMPLECOUNT_1,
+		};
+
+		return make_gpu_texture(gpu, texture_info, "Depth Stencil Texture");
 	}
 
 	auto make_perspective() -> glm::mat4
@@ -273,6 +295,8 @@ void application::prepare_scene()
 
 	std::tie(scn.vertex_buffer, scn.index_buffer) = upload_mesh(gpu.get(), sqr_msh);
 
+	scn.depth_texture = make_depth_texture(gpu.get(), wnd.get());
+
 	scn.mvp.projection = make_perspective();
 }
 
@@ -298,7 +322,18 @@ void application::draw()
 		.store_op    = SDL_GPU_STOREOP_STORE,
 	};
 
-	auto render_pass = SDL_BeginGPURenderPass(cmd_buf, &color_target, 1, nullptr);
+	auto depth_target = SDL_GPUDepthStencilTargetInfo{
+		.texture          = scn.depth_texture.get(),
+		.clear_depth      = 1.0f,
+		.load_op          = SDL_GPU_LOADOP_CLEAR,
+		.store_op         = SDL_GPU_STOREOP_STORE,
+		.stencil_load_op  = SDL_GPU_LOADOP_CLEAR,
+		.stencil_store_op = SDL_GPU_STOREOP_STORE,
+		.cycle            = true,
+		.clear_stencil    = 0,
+	};
+
+	auto render_pass = SDL_BeginGPURenderPass(cmd_buf, &color_target, 1, &depth_target);
 	{
 		SDL_BindGPUGraphicsPipeline(render_pass, scn.basic_pipeline.get());
 

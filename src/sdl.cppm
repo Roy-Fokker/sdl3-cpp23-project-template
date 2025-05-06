@@ -470,6 +470,30 @@ export namespace sdl
 		return { buffer, { gpu } };
 	}
 
+	auto make_gpu_texture(SDL_GPUDevice *gpu, const SDL_GPUTextureCreateInfo &texture_info, std::string_view debug_name) -> type::gpu_texture_ptr
+	{
+		auto ti = texture_info;
+#ifdef WINDOWS
+		if (get_gpu_supported_shader_format(gpu) & SDL_GPU_SHADERFORMAT_DXIL and
+		    texture_info.usage & SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET)
+		{
+			auto props = SDL_CreateProperties();
+			SDL_SetFloatProperty(props, SDL_PROP_GPU_TEXTURE_CREATE_D3D12_CLEAR_DEPTH_FLOAT, 1.0f);
+			ti.props = props;
+		}
+#endif
+
+		auto texture = SDL_CreateGPUTexture(gpu, &ti);
+		assert(texture != nullptr and "Failed to create gpu texture.");
+
+		if (IS_DEBUG and debug_name.size() > 0)
+		{
+			SDL_SetGPUTextureName(gpu, texture, debug_name.data());
+		}
+
+		return { texture, { gpu } };
+	}
+
 	void upload_to_gpu(SDL_GPUDevice *gpu, SDL_GPUBuffer *buffer, io::byte_span src_data)
 	{
 		auto src_size = static_cast<uint32_t>(src_data.size());
