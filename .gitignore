@@ -19,6 +19,9 @@
 !.vscode/settings.json
 *.code-workspace
 
+# ignore JetBrains IDEs
+.idea
+
 # Local History for Visual Studio Code
 .history/
 

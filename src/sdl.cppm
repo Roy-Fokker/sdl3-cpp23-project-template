@@ -531,4 +531,51 @@ export namespace sdl
 		}
 		SDL_ReleaseGPUTransferBuffer(gpu, transfer_buffer);
 	}
+
+	// void upload_to_gpu(SDL_GPUDevice *gpu, SDL_GPUTexture *texture, const io::image_t &img)
+	// {
+	// 	auto src_size = static_cast<uint32_t>(img.data.size());
+
+	// 	auto transfer_info = SDL_GPUTransferBufferCreateInfo{
+	// 		.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
+	// 		.size  = src_size,
+	// 	};
+	// 	auto transfer_buffer = SDL_CreateGPUTransferBuffer(gpu, &transfer_info);
+	// 	assert(transfer_buffer != nullptr and "Failed to create transfer buffer.");
+
+	// 	auto dst_data = SDL_MapGPUTransferBuffer(gpu, transfer_buffer, false);
+	// 	std::memcpy(dst_data, img.data.data(), src_size);
+	// 	SDL_UnmapGPUTransferBuffer(gpu, transfer_buffer);
+
+	// 	auto copy_cmd = SDL_AcquireGPUCommandBuffer(gpu);
+	// 	{
+	// 		auto copy_pass = SDL_BeginGPUCopyPass(copy_cmd);
+	// 		{
+	// 			auto src = SDL_GPUTextureTransferInfo{
+	// 				.transfer_buffer = transfer_buffer,
+	// 				.offset          = 0,
+	// 			};
+
+	// 			auto dst = SDL_GPUTextureRegion{
+	// 				.texture = texture,
+	// 			};
+
+	// 			for (auto &&sub_image : img.sub_images)
+	// 			{
+	// 				src.offset = static_cast<uint32_t>(sub_image.offset);
+
+	// 				dst.mip_level = sub_image.mipmap_index;
+	// 				dst.layer     = sub_image.layer_index;
+	// 				dst.w         = sub_image.width;
+	// 				dst.h         = sub_image.height;
+	// 				dst.d         = 1;
+
+	// 				SDL_UploadToGPUTexture(copy_pass, &src, &dst, false);
+	// 			}
+	// 		}
+	// 		SDL_EndGPUCopyPass(copy_pass);
+	// 		SDL_SubmitGPUCommandBuffer(copy_cmd);
+	// 	}
+	// 	SDL_ReleaseGPUTransferBuffer(gpu, transfer_buffer);
+	// }
 }

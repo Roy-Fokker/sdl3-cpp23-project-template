@@ -57,7 +57,7 @@ Uses following libraries retrieved from their project repos by CPM.CMake
     - Simple vertex shader that uses uniform buffer to fix rendering perspective
     - Simple pixel/fragment shader
   - Vertex and Index buffers for Square mesh, in `Prepare Scene`
-  - Create Perpective projection, in `Prepare Scene`
+  - Create Perspective projection, in `Prepare Scene`
   - `Draw`s square using Indexed Primitives
   - Quit on any-key pressed, in `Handle SDL Input`
 
@@ -66,5 +66,5 @@ Uses following libraries retrieved from their project repos by CPM.CMake
   - Hacky solution for intellisense to show STD library types.
 
 ## references
-- CMake 3.30 magic encantations, https://www.kitware.com/import-std-in-cmake-3-30/
+- CMake 3.30 magic incantations, https://www.kitware.com/import-std-in-cmake-3-30/
 - CMake module compilations, https://www.kitware.com/import-cmake-the-experiment-is-over/
