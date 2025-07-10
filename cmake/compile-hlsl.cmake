@@ -4,7 +4,7 @@
 function(target_hlsl_sources TARGET SHADER_FORMAT)
 	# HLSL compiler
 	# Find DXC from Vulkan SDK or Windows SDK.
-	if (SHADER_FORMAT MATCHES "SPIR-V")
+	if (SHADER_FORMAT MATCHES "SPIRV")
 		find_program(DXC 
 			NAMES dxc dxc.exe
 			HINTS $ENV{VULKAN_SDK}/bin /usr/bin
@@ -37,7 +37,7 @@ function(target_hlsl_sources TARGET SHADER_FORMAT)
 
 	# Are we using Vulkan SDK's dxc?
 	set(use_spirv "")
-	if (SHADER_FORMAT MATCHES "SPIR-V")
+	if (SHADER_FORMAT MATCHES "SPIRV")
 		set(use_spirv "-spirv")
 	endif()
 	

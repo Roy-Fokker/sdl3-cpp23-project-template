@@ -8,6 +8,10 @@ endif()
 # name of this application/library
 set(PRJ_APP_NAME "sdl3-cpp-app")
 
+# Shader Binary type
+# 	Implemented options, SPIRV or DXIL
+set(SHADER_FORMAT "DXIL")
+
 # create executable for initial setup
 add_executable(${PRJ_APP_NAME})
 
@@ -27,6 +31,7 @@ target_compile_definitions(${PRJ_APP_NAME}
 		$<$<CONFIG:Debug>:DEBUG>    # Ensure DEBUG macro is defined in debug build
 		${platform_definitions}     # Get platform specific definitions
 		${glm_definitions}          # Definitions to configure GLM
+		${SHADER_FORMAT}            # Shader Format we want to use
 )
 
 # precompiled headers
@@ -58,7 +63,7 @@ target_link_libraries(${PRJ_APP_NAME}
 )
 
 # shaders used by this project
-target_hlsl_sources(${PRJ_APP_NAME} SPIR-V
+target_hlsl_sources(${PRJ_APP_NAME} ${SHADER_FORMAT}
 	shaders/basic.vs.hlsl : vs_6_4
 	shaders/basic.ps.hlsl : ps_6_4
 )

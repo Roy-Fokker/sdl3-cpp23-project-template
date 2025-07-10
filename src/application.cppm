@@ -32,8 +32,16 @@ export namespace project
 		{
 			constexpr auto WND_TITLE = "SDL3 C++ 23 Project Template"sv;
 
+			constexpr auto SHADER_FORMAT = SDL_GPUShaderFormat{
+#ifdef SPIRV
+				SDL_GPU_SHADERFORMAT_SPIRV
+#elifdef DXIL
+				SDL_GPU_SHADERFORMAT_DXIL
+#endif
+			};
+
 			wnd = sdl::make_window(WND_WIDTH, WND_HEIGHT, WND_TITLE, {});
-			gpu = sdl::make_gpu(wnd.get(), SDL_GPU_SHADERFORMAT_SPIRV);
+			gpu = sdl::make_gpu(wnd.get(), SHADER_FORMAT);
 		}
 		~application() = default;
 

@@ -39,7 +39,7 @@ VSCode will run these automatically.
   - MSVC (Windows only)
   - Clang (Linux with libc++ only)
 - Focuses on SDL3 GPU
-- HLSL for all shaders
+- HLSL for all shaders, compile to SPIRV for Vulkan and DXIL for Direct3D
 
 ## Example project dependencies
 Uses following libraries retrieved from their project repos by CPM.CMake
