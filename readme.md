@@ -68,3 +68,5 @@ Uses following libraries retrieved from their project repos by CPM.CMake
 ## references
 - CMake 3.30 magic incantations, https://www.kitware.com/import-std-in-cmake-3-30/
 - CMake module compilations, https://www.kitware.com/import-cmake-the-experiment-is-over/
+- CMake experimental flag GUID for modules, https://github.com/Kitware/CMake/blob/master/Help/dev/experimental.rst#c-import-std-support
+
