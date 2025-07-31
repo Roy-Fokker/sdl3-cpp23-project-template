@@ -86,7 +86,7 @@ function(target_hlsl_sources TARGET SHADER_FORMAT)
 			COMMAND ${CMAKE_COMMAND} -E make_directory ${shader_dir}
 			COMMAND ${DXC} ${use_spirv} -E main -Fo ${output} -T ${hlsl_profile} ${source_abs} ${shader_pdb_options}
 			DEPENDS ${source_abs}
-			COMMENT "DXC Compiling SPIRV: ${hlsl_filename} -> ${output}"
+			COMMENT "DXC Compiling ${SHADER_FORMAT}: ${hlsl_filename} -> ${output}"
 			VERBATIM
 		)
 
