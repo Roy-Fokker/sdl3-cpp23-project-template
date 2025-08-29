@@ -46,19 +46,22 @@ Uses following libraries retrieved from their project repos by CPM.CMake
 - SDL3, obviously
 - GLM, for math
 - DXC, from Vulkan SDK for Vulkan backend **or** from Windows SDK for DirectX backend
+- Dear Imgui, for simple debug ui
 
 ## Basic notes on code structure
 - As much as is possible, functions will not take ownership of pointers to objects.
 - Where able, all SDL GPU types are wrapped into std::unique_ptr with custom deleters, so they self clean on scope exit.
 - SDL init and quit is wrapped in C++ class and created/destructed by Application class.
 - `Application` class does following
-  - Create SDL Window and GPU, in Application `C'Tor`
+  - Create SDL Window, GPU, Imgui, in Application
   - Create Basic Pipeline, in `Prepare Scene`
     - Simple vertex shader that uses uniform buffer to fix rendering perspective
     - Simple pixel/fragment shader
   - Vertex and Index buffers for Square mesh, in `Prepare Scene`
   - Create Perspective projection, in `Prepare Scene`
+  - Create ImGui window in `Prepare Scene`
   - `Draw`s square using Indexed Primitives
+  - `Draw` gui via ImGui
   - Quit on any-key pressed, in `Handle SDL Input`
 
 ## To be figured out

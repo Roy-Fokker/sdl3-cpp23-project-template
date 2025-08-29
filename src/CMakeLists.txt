@@ -53,13 +53,15 @@ target_sources(${PRJ_APP_NAME}
 		application.cppm
 		clock.cppm
 		io.cppm
+		imgui.cppm
 )
 
 # libraries used by this application
 target_link_libraries(${PRJ_APP_NAME}
 	PRIVATE
-		SDL3::SDL3 # SDL3 Library
-		glm::glm   # GL Math Library
+		SDL3::SDL3   # SDL3 Library
+		glm::glm     # GL Math Library
+		imgui::imgui # Dear Imgui library
 )
 
 # shaders used by this project

@@ -95,7 +95,7 @@ export namespace sdl
 		assert(window != nullptr and "Window could not be created.");
 
 		// enable relative mouse movement
-		SDL_SetWindowRelativeMouseMode(window, true);
+		// SDL_SetWindowRelativeMouseMode(window, true);
 
 		return type::window_ptr{ window };
 	}

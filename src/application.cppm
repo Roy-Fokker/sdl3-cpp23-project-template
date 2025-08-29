@@ -6,6 +6,7 @@ import std;
 import sdl;
 import clock;
 import io;
+import imgui;
 
 namespace st = sdl::type;
 using namespace std::literals;
@@ -96,6 +97,7 @@ export namespace project
 		sdl::sdl_base sdl_o = {};                                                     // SDL base object
 		st::window_ptr wnd  = sdl::make_window(WND_WIDTH, WND_HEIGHT, WND_TITLE, {}); // SDL window object
 		st::gpu_ptr gpu     = sdl::make_gpu(wnd.get(), SHADER_FORMAT);                // SDL GPU object
+		imgui gui           = imgui(wnd.get(), gpu.get());                            // Dear Imgui wrapper
 		SDL_Event evt       = {};                                                     // SDL Event object
 		scene scn           = {};                                                     // Project's Render context;
 
@@ -310,6 +312,10 @@ void application::prepare_scene()
 
 void application::update_state()
 {
+	auto dt = clk.get_delta<clock::ms>();
+
+	// imgui update
+	gui.update(dt);
 }
 
 void application::draw()
@@ -362,5 +368,10 @@ void application::draw()
 		SDL_DrawGPUIndexedPrimitives(render_pass, scn.index_count, 1, 0, 0, 0);
 	}
 	SDL_EndGPURenderPass(render_pass);
+
+	// ImGui renderpass
+	color_target.load_op = SDL_GPU_LOADOP_LOAD;
+	gui.draw(cmd_buf, color_target);
+
 	SDL_SubmitGPUCommandBuffer(cmd_buf);
 }
