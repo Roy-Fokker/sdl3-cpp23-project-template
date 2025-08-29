@@ -12,8 +12,18 @@ using namespace std::literals;
 
 namespace
 {
-	constexpr auto WND_WIDTH  = 800u;
-	constexpr auto WND_HEIGHT = 600u;
+	constexpr auto WND_WIDTH     = 800u;
+	constexpr auto WND_HEIGHT    = 600u;
+	constexpr auto SHADER_FORMAT = SDL_GPUShaderFormat{
+#ifdef SPIRV
+		SDL_GPU_SHADERFORMAT_SPIRV
+#elifdef DXIL
+		SDL_GPU_SHADERFORMAT_DXIL
+#endif
+	};
+
+	// TODO: why does it need 'inline' keyword???
+	inline constexpr auto WND_TITLE = "SDL3 GPU C++ 23 Project Template"sv;
 }
 
 export namespace project
@@ -28,21 +38,7 @@ export namespace project
 		auto operator=(application &&) -> application &      = default; // defaulted move c'tor
 
 		// Public API
-		application()
-		{
-			constexpr auto WND_TITLE = "SDL3 C++ 23 Project Template"sv;
-
-			constexpr auto SHADER_FORMAT = SDL_GPUShaderFormat{
-#ifdef SPIRV
-				SDL_GPU_SHADERFORMAT_SPIRV
-#elifdef DXIL
-				SDL_GPU_SHADERFORMAT_DXIL
-#endif
-			};
-
-			wnd = sdl::make_window(WND_WIDTH, WND_HEIGHT, WND_TITLE, {});
-			gpu = sdl::make_gpu(wnd.get(), SHADER_FORMAT);
-		}
+		application()  = default;
 		~application() = default;
 
 		auto run() -> int
@@ -97,11 +93,11 @@ export namespace project
 		};
 
 		// Private members
-		sdl::sdl_base sdl_o = {};      // SDL base object
-		st::window_ptr wnd  = nullptr; // SDL window object
-		st::gpu_ptr gpu     = nullptr; // SDL GPU object
-		SDL_Event evt       = {};      // SDL Event object
-		scene scn           = {};      // Project's Render context;
+		sdl::sdl_base sdl_o = {};                                                     // SDL base object
+		st::window_ptr wnd  = sdl::make_window(WND_WIDTH, WND_HEIGHT, WND_TITLE, {}); // SDL window object
+		st::gpu_ptr gpu     = sdl::make_gpu(wnd.get(), SHADER_FORMAT);                // SDL GPU object
+		SDL_Event evt       = {};                                                     // SDL Event object
+		scene scn           = {};                                                     // Project's Render context;
 
 		clock clk = {};
 		bool quit = false;
@@ -192,8 +188,12 @@ namespace
 			  { { -x, -y, 1.f }, { 0.f, 1.f, 1.f, 1.f } },
 			},
 			.indices = {
-			  0, 1, 2, // face 1
-			  2, 3, 0, // face 2
+			  0,
+			  1,
+			  2, // face 1
+			  2,
+			  3,
+			  0, // face 2
 			},
 		};
 	}
