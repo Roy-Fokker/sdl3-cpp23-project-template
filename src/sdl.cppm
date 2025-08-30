@@ -100,8 +100,39 @@ export namespace sdl
 		return type::window_ptr{ window };
 	}
 
+	enum class swapchain_mode : uint8_t
+	{
+		vsync     = SDL_GPU_PRESENTMODE_VSYNC,
+		immediate = SDL_GPU_PRESENTMODE_IMMEDIATE,
+		mailbox   = SDL_GPU_PRESENTMODE_MAILBOX,
+	};
+
+	auto to_sdl(swapchain_mode mode) -> SDL_GPUPresentMode
+	{
+		return static_cast<SDL_GPUPresentMode>(mode);
+	}
+
+	enum class swapchain_composition : uint8_t
+	{
+		sdr                 = SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
+		sdr_linear          = SDL_GPU_SWAPCHAINCOMPOSITION_SDR_LINEAR,
+		hdr_extended_linear = SDL_GPU_SWAPCHAINCOMPOSITION_HDR_EXTENDED_LINEAR,
+		hdr10_st2048        = SDL_GPU_SWAPCHAINCOMPOSITION_HDR10_ST2084
+	};
+
+	auto to_sdl(swapchain_composition composition) -> SDL_GPUSwapchainComposition
+	{
+		return static_cast<SDL_GPUSwapchainComposition>(composition);
+	}
+
+	struct gpu_config
+	{
+		swapchain_mode mode               = swapchain_mode::vsync;
+		swapchain_composition composition = swapchain_composition::sdr;
+	};
+
 	// make_gpu does not take ownership of *wnd. *wnd must stay alive for duration of gpu_ptr.
-	auto make_gpu(SDL_Window *wnd, SDL_GPUShaderFormat preferred_shader_format) -> type::gpu_ptr
+	auto make_gpu(SDL_Window *wnd, SDL_GPUShaderFormat preferred_shader_format, const gpu_config &config = gpu_config{}) -> type::gpu_ptr
 	{
 		auto gpu = SDL_CreateGPUDevice(preferred_shader_format, IS_DEBUG, NULL);
 		assert(gpu != nullptr and "GPU device could not be created.");
@@ -110,6 +141,15 @@ export namespace sdl
 
 		auto result = SDL_ClaimWindowForGPUDevice(gpu, wnd);
 		assert(result == true and "Could not claim window for GPU.");
+
+		result = SDL_WindowSupportsGPUPresentMode(gpu, wnd, to_sdl(config.mode));
+		assert(result == true and "GPU swapchain does not support swapchain mode.");
+
+		result = SDL_WindowSupportsGPUSwapchainComposition(gpu, wnd, to_sdl(config.composition));
+		assert(result == true and "GPU swapchain does not support swapchain composition.");
+
+		result = SDL_SetGPUSwapchainParameters(gpu, wnd, to_sdl(config.composition), to_sdl(config.mode));
+		assert(result == true and "Unable to set GPU Swapchain Parameters");
 
 		return type::gpu_ptr{ gpu, { wnd } };
 	}
