@@ -224,15 +224,18 @@ namespace
 		auto h = 0;
 		SDL_GetWindowSizeInPixels(wnd, &w, &h);
 
+		auto format = get_gpu_supported_depth_stencil_format(gpu);
+		auto msaa   = get_gpu_supported_sample_count(gpu, format);
+
 		auto texture_info = SDL_GPUTextureCreateInfo{
 			.type                 = SDL_GPU_TEXTURETYPE_2D,
-			.format               = get_gpu_supported_depth_stencil_format(gpu),
+			.format               = format,
 			.usage                = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET,
 			.width                = static_cast<uint32_t>(w),
 			.height               = static_cast<uint32_t>(h),
 			.layer_count_or_depth = 1,
 			.num_levels           = 1,
-			.sample_count         = SDL_GPU_SAMPLECOUNT_1,
+			.sample_count         = msaa,
 		};
 
 		return make_gpu_texture(gpu, texture_info, "Depth Stencil Texture");

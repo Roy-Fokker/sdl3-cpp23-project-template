@@ -320,6 +320,22 @@ export namespace sdl
 		};
 	}
 
+	auto get_gpu_supported_sample_count(SDL_GPUDevice *gpu, SDL_GPUTextureFormat format) -> SDL_GPUSampleCount
+	{
+		auto sample_counts = std::array{
+			SDL_GPU_SAMPLECOUNT_1,
+			SDL_GPU_SAMPLECOUNT_2,
+			SDL_GPU_SAMPLECOUNT_4,
+			SDL_GPU_SAMPLECOUNT_8,
+		};
+
+		auto check_sample_count = [&](auto count) {
+			return SDL_GPUTextureSupportsSampleCount(gpu, format, count);
+		};
+
+		return rg::max(sample_counts | vw::take_while(check_sample_count));
+	}
+
 	auto get_gpu_supported_shader_format(SDL_GPUDevice *gpu) -> SDL_GPUShaderFormat
 	{
 		auto backend_formats = SDL_GetGPUShaderFormats(gpu);
