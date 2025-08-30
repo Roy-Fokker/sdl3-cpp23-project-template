@@ -95,12 +95,12 @@ export namespace project
 		};
 
 		// Private members
-		sdl::sdl_base sdl_o = {};                                                     // SDL base object
-		st::window_ptr wnd  = sdl::make_window(WND_WIDTH, WND_HEIGHT, WND_TITLE, {}); // SDL window object
-		st::gpu_ptr gpu     = sdl::make_gpu(wnd.get(), SHADER_FORMAT);                // SDL GPU object
-		imgui gui           = imgui(wnd.get(), gpu.get());                            // Dear Imgui wrapper
-		SDL_Event evt       = {};                                                     // SDL Event object
-		scene scn           = {};                                                     // Project's Render context;
+		sdl::sdl_base sdl_o = {};                                                 // SDL base object
+		st::window_ptr wnd  = sdl::make_window(WND_WIDTH, WND_HEIGHT, WND_TITLE); // SDL window object
+		st::gpu_ptr gpu     = sdl::make_gpu(wnd.get(), SHADER_FORMAT);            // SDL GPU object
+		imgui gui           = imgui(wnd.get(), gpu.get());                        // Dear Imgui wrapper
+		SDL_Event evt       = {};                                                 // SDL Event object
+		scene scn           = {};                                                 // Project's Render context;
 
 		clock clk = {};
 		bool quit = false;
