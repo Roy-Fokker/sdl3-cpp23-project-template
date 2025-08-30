@@ -14,7 +14,8 @@ using namespace std::literals;
 namespace
 {
 	constexpr auto WND_WIDTH     = 800u;
-	constexpr auto WND_HEIGHT    = 600u;
+	constexpr auto ASPECT_RATIO  = 16.f / 9.f;
+	constexpr auto WND_HEIGHT    = static_cast<int>(WND_WIDTH / ASPECT_RATIO);
 	constexpr auto SHADER_FORMAT = SDL_GPUShaderFormat{
 #ifdef SPIRV
 		SDL_GPU_SHADERFORMAT_SPIRV
@@ -239,12 +240,11 @@ namespace
 
 	auto make_perspective() -> glm::mat4
 	{
-		constexpr auto fovy         = glm::radians(60.f);
-		constexpr auto aspect_ratio = static_cast<float>(WND_WIDTH) / static_cast<float>(WND_HEIGHT);
-		constexpr auto near_plane   = 0.1f;
-		constexpr auto far_plane    = 10.f;
+		constexpr auto fovy       = glm::radians(60.f);
+		constexpr auto near_plane = 0.1f;
+		constexpr auto far_plane  = 10.f;
 
-		return glm::perspective(fovy, aspect_ratio, near_plane, far_plane);
+		return glm::perspective(fovy, ASPECT_RATIO, near_plane, far_plane);
 	}
 }
 
