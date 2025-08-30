@@ -312,7 +312,7 @@ void application::prepare_scene()
 
 void application::update_state()
 {
-	auto dt = clk.get_delta<clock::ms>();
+	auto dt = static_cast<float>(clk.get_delta<clock::ms>());
 
 	// imgui update
 	gui.update(dt);
