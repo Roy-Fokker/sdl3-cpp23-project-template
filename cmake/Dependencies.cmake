@@ -3,7 +3,7 @@ include(${CMAKE_MODULE_PATH}/CPM.cmake)
 
 # Dependencies
 ## Simple Directmedia Library
-CPMAddPackage("gh:libsdl-org/SDL#release-3.2.20")
+CPMAddPackage("gh:libsdl-org/SDL#release-3.2.22")
 
 ## Graphics Math Library
 CPMAddPackage(
