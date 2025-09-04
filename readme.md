@@ -59,7 +59,7 @@ Uses following libraries retrieved from their project repos by CPM.CMake
     - Simple pixel/fragment shader
   - Vertex and Index buffers for Square mesh, in `Prepare Scene`
   - Create Perspective projection, in `Prepare Scene`
-  - Create ImGui window in `Prepare Scene`
+  - Create ImGui window in `Update Scene`
   - `Draw`s square using Indexed Primitives
   - `Draw` gui via ImGui
   - Quit on any-key pressed, in `Handle SDL Input`
