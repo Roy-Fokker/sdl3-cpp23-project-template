@@ -35,6 +35,16 @@ export namespace project
 			ImGui::DestroyContext(ctx);
 		}
 
+		auto handle_event(const SDL_Event &evt) -> bool
+		{
+			if (ImGui_ImplSDL3_ProcessEvent(&evt))
+			{
+				return (io->WantCaptureKeyboard and io->WantCaptureMouse);
+			}
+
+			return false;
+		}
+
 		void update(float dt)
 		{
 			ImGui_ImplSDLGPU3_NewFrame();

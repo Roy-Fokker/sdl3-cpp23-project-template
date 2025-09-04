@@ -255,6 +255,11 @@ void application::handle_sdl_events()
 {
 	while (SDL_PollEvent(&evt))
 	{
+		if (gui.handle_event(evt))
+		{
+			continue;
+		}
+
 		switch (evt.type)
 		{
 		case SDL_EVENT_QUIT:
