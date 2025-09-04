@@ -272,7 +272,19 @@ void application::handle_sdl_events()
 void application::handle_sdl_input()
 {
 	auto handle_keyboard = [&]([[maybe_unused]] const SDL_KeyboardEvent &key_evt) {
-		quit = true;
+		switch (key_evt.scancode)
+		{
+		case SDL_SCANCODE_ESCAPE:
+			quit = true;
+			break;
+		case SDL_SCANCODE_TAB:
+			auto mode = (SDL_GetWindowRelativeMouseMode(wnd.get()))
+			              ? mouse_mode::free
+			              : mouse_mode::relative;
+
+			toggle_mouse_mode(wnd.get(), mode);
+			break;
+		}
 	};
 
 	auto handle_mouse_motion = [&]([[maybe_unused]] const SDL_MouseMotionEvent &mouse_evt) {

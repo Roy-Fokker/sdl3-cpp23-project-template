@@ -94,10 +94,31 @@ export namespace sdl
 		auto window = SDL_CreateWindow(title.data(), static_cast<int>(width), static_cast<int>(height), flags);
 		assert(window != nullptr and "Window could not be created.");
 
-		// enable relative mouse movement
-		// SDL_SetWindowRelativeMouseMode(window, true);
-
 		return type::window_ptr{ window };
+	}
+
+	enum class mouse_mode : uint8_t
+	{
+		relative,
+		free,
+	};
+
+	auto toggle_mouse_mode(SDL_Window *wnd, mouse_mode mode) -> bool
+	{
+		using enum mouse_mode;
+
+		switch (mode)
+		{
+		case relative:
+			return SDL_SetWindowRelativeMouseMode(wnd, true);
+		case free:
+			return SDL_SetWindowRelativeMouseMode(wnd, false);
+		default:
+			assert(false and "Unhandled mouse mode.");
+			break;
+		}
+
+		return false;
 	}
 
 	enum class swapchain_mode : uint8_t
