@@ -500,8 +500,8 @@ export namespace sdl
 
 			auto color_targets = std::array{
 				SDL_GPUColorTargetDescription{
-				  .format      = color_format,
-				  .blend_state = to_sdl(blend),
+					.format      = color_format,
+					.blend_state = to_sdl(blend),
 				},
 			};
 
@@ -551,8 +551,8 @@ export namespace sdl
 	{
 		auto ti = texture_info;
 #ifdef WINDOWS
-		if (get_gpu_supported_shader_format(gpu) & SDL_GPU_SHADERFORMAT_DXIL and
-		    texture_info.usage & SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET)
+		if (get_gpu_supported_shader_format(gpu) & SDL_GPU_SHADERFORMAT_DXIL
+		    and texture_info.usage & SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET)
 		{
 			auto props = SDL_CreateProperties();
 			SDL_SetFloatProperty(props, SDL_PROP_GPU_TEXTURE_CREATE_D3D12_CLEAR_DEPTH_FLOAT, 1.0f);

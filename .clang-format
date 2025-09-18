@@ -37,4 +37,5 @@ LambdaBodyIndentation: OuterScope
 BreakBeforeTernaryOperators: true
 AlignOperands: AlignAfterOperator
 SortIncludes: false
-BracedInitializerIndentWidth: 2
+BracedInitializerIndentWidth: 4
+BreakBeforeBinaryOperators: NonAssignment

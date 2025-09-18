@@ -141,25 +141,25 @@ namespace
 		using VA = SDL_GPUVertexAttribute;
 		auto va  = std::array{
             VA{
-			   .location    = 0,
-			   .buffer_slot = 0,
-			   .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
-			   .offset      = 0,
+				 .location    = 0,
+				 .buffer_slot = 0,
+				 .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT3,
+				 .offset      = 0,
             },
             VA{
-			   .location    = 1,
-			   .buffer_slot = 0,
-			   .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
-			   .offset      = sizeof(glm::vec3),
+				 .location    = 1,
+				 .buffer_slot = 0,
+				 .format      = SDL_GPU_VERTEXELEMENTFORMAT_FLOAT4,
+				 .offset      = sizeof(glm::vec3),
             },
 		};
 
 		using VBD = SDL_GPUVertexBufferDescription;
 		auto vbd  = std::array{
             VBD{
-			   .slot       = 0,
-			   .pitch      = sizeof(vertex),
-			   .input_rate = SDL_GPU_VERTEXINPUTRATE_VERTEX,
+				 .slot       = 0,
+				 .pitch      = sizeof(vertex),
+				 .input_rate = SDL_GPU_VERTEXINPUTRATE_VERTEX,
             },
 		};
 
@@ -185,18 +185,18 @@ namespace
 
 		return {
 			.vertices = {
-			  { { -x, +y, 1.f }, { 0.f, 0.f, 1.f, 1.f } },
-			  { { +x, +y, 1.f }, { 1.f, 0.f, 0.f, 1.f } },
-			  { { +x, -y, 1.f }, { 0.f, 1.f, 0.f, 1.f } },
-			  { { -x, -y, 1.f }, { 0.f, 1.f, 1.f, 1.f } },
+				{ { -x, +y, 1.f }, { 0.f, 0.f, 1.f, 1.f } },
+				{ { +x, +y, 1.f }, { 1.f, 0.f, 0.f, 1.f } },
+				{ { +x, -y, 1.f }, { 0.f, 1.f, 0.f, 1.f } },
+				{ { -x, -y, 1.f }, { 0.f, 1.f, 1.f, 1.f } },
 			},
 			.indices = {
-			  0,
-			  1,
-			  2, // face 1
-			  2,
-			  3,
-			  0, // face 2
+				0,
+				1,
+				2, // face 1
+				2,
+				3,
+				0, // face 2
 			},
 		};
 	}
@@ -373,8 +373,8 @@ void application::draw()
 
 		auto vertex_bindings = std::array{
 			SDL_GPUBufferBinding{
-			  .buffer = scn.vertex_buffer.get(),
-			  .offset = 0,
+				.buffer = scn.vertex_buffer.get(),
+				.offset = 0,
 			},
 		};
 		SDL_BindGPUVertexBuffers(render_pass, 0, vertex_bindings.data(), static_cast<uint32_t>(vertex_bindings.size()));
